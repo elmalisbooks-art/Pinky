@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pink Members</title>
+<style>
+  :root { --pink:#ff69b4; --deep:#c2185b; --pale:#fff0f7; --white:#fff; --text:#3b1730; }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; min-height:100vh; font-family:Arial, Helvetica, sans-serif;
+    background:linear-gradient(135deg,#ffb6d9,#ff69b4); color:var(--text);
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .container { width:min(100%,850px); }
+  .card {
+    background:rgba(255,255,255,.96); border-radius:22px; padding:clamp(20px,5vw,38px);
+    box-shadow:0 14px 38px rgba(105,0,53,.2); border:2px solid rgba(255,255,255,.8);
+  }
+  h1 { text-align:center; color:var(--deep); margin:0 0 8px; font-size:clamp(26px,5vw,36px); }
+  .subtitle { text-align:center; margin:0 0 25px; color:#77445f; }
+  label { display:block; font-weight:700; margin:16px 0 7px; }
+  input {
+    display:block; width:100%; padding:14px 15px; border:2px solid #f3a3ca;
+    border-radius:12px; font-size:16px; outline:none; background:#fffafd;
+  }
+  input:focus { border-color:var(--deep); box-shadow:0 0 0 3px #fce0ee; }
+  button {
+    width:100%; border:0; border-radius:12px; background:var(--deep); color:white;
+    font-size:16px; font-weight:800; padding:15px; margin-top:22px; cursor:pointer;
+    transition:transform .15s, background .15s;
+  }
+  button:hover { background:#a30f4c; transform:translateY(-1px); }
+  .secondary { background:#8f5572; }
+  .secondary:hover { background:#71405a; }
+  .message { min-height:22px; margin-top:12px; font-size:14px; font-weight:700; color:#b00045; }
+  .hint { color:#7b5369; font-size:13px; margin:6px 0 0; }
+  .hidden { display:none !important; }
+  .table-wrap { width:100%; overflow-x:auto; margin-top:20px; border-radius:12px; }
+  table { width:100%; border-collapse:collapse; background:white; min-width:520px; }
+  th, td { padding:13px 12px; text-align:left; border-bottom:1px solid #f5c5dd; }
+  th { background:#f8c4df; color:#5b1740; }
+  tr:hover td { background:#fff6fb; }
+  .welcome { text-align:center; margin:8px 0 6px; color:var(--deep); }
+  .count { text-align:center; color:#77445f; margin:0; }
+  .notice { background:#fff0f7; border-left:4px solid var(--deep); padding:12px 14px; border-radius:8px; font-size:13px; line-height:1.5; margin-top:18px; }
+  .top-actions { display:flex; gap:10px; }
+  .top-actions button { flex:1; }
+  @media(max-width:480px) { body { padding:12px; } .card { border-radius:17px; } .top-actions { flex-direction:column; gap:0; } }
+</style>
+</head>
+<body>
+<main class="container">
+  <section class="card" id="signupPage">
+    <h1>💗 CREATE ACCOUNT</h1>
+    <p class="subtitle">Join our pink members community</p>
+    <form id="signupForm" novalidate>
+      <label for="realName">Real name</label>
+      <input id="realName" name="realName" type="text" autocomplete="name" placeholder="Enter your real name" maxlength="60" required>
+      <p class="hint">Letters and spaces only. No numbers or symbols.</p>
+
+      <label for="phone">WhatsApp number / Your number</label>
+      <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="e.g. 0712345678" maxlength="10" required>
+      <p class="hint">Exactly 10 digits and must start with 07 or 01.</p>
+
+      <label for="signupPassword">Password</label>
+      <input id="signupPassword" name="password" type="password" autocomplete="new-password" placeholder="Create a password" minlength="4" maxlength="10" required>
+      <p class="hint">4–10 characters. Letters, numbers and symbols are allowed.</p>
+
+      <button type="submit">SIGH UP</button>
+      <div class="message" id="signupMessage" role="alert"></div>
+    </form>
+    <button type="button" class="secondary" id="goLogin">Already registered? LOG IN</button>
+    <div class="notice"><strong>Demo note:</strong> This single-file version stores members only in this browser on this device. It is not a secure shared membership database. Do not use real or sensitive passwords until a backend is connected.</div>
+  </section>
+
+  <section class="card hidden" id="loginPage">
+    <h1>💗 MEMBER LOGIN</h1>
+    <p class="subtitle">Enter the password you used when signing up</p>
+    <form id="loginForm" novalidate>
+      <label for="loginPassword">Password</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your signup password" maxlength="10" required>
+      <button type="submit">LOG IN</button>
+      <div class="message" id="loginMessage" role="alert"></div>
+    </form>
+    <button type="button" class="secondary" id="backSignup">BACK TO SIGN UP</button>
+  </section>
+
+  <section class="card hidden" id="welcomePage">
+    <h1>💗 WELCOME!</h1>
+    <p class="welcome" id="welcomeName"></p>
+    <p class="count" id="memberCount">Registered members</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Real name</th><th>WhatsApp number</th></tr></thead>
+        <tbody id="membersTable"></tbody>
+      </table>
+    </div>
+    <p class="hint">For privacy, passwords are never shown in this table.</p>
+    <div class="top-actions">
+      <button type="button" class="secondary" id="addMember">ADD ANOTHER MEMBER</button>
+      <button type="button" id="logout">LOG OUT</button>
+    </div>
+    <div class="notice">This demo shows registrations saved in this browser only. To let every member see registrations from other devices, connect this frontend to a shared backend and database.</div>
+  </section>
+</main>
+<script>
+(() => {
+  "use strict";
+
+  const STORAGE_KEY = "pinkMembersDemo_v1";
+  const $ = (id) => document.getElementById(id);
+  const pages = ["signupPage", "loginPage", "welcomePage"];
+
+  // This is a front-end demo only. Passwords are stored locally for demonstration.
+  // Never use this localStorage approach for a production authentication system.
+  function getMembers() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  function saveMembers(members) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(members));
+  }
+  function showPage(pageId) {
+    pages.forEach(id => $(id).classList.toggle("hidden", id !== pageId));
+    clearMessages();
+  }
+  function clearMessages() {
+    $("signupMessage").textContent = "";
+    $("loginMessage").textContent = "";
+  }
+  function validName(name) {
+    // Letters from any language plus spaces; must contain at least one letter.
+    return /^[\p{L}]+(?:[ \u2019'-][\p{L}]+)*$/u.test(name.trim()) && /\p{L}/u.test(name);
+  }
+  function validPhone(phone) {
+    return /^(07|01)\d{8}$/.test(phone);
+  }
+  function renderMembers(currentMember) {
+    const members = getMembers();
+    $("welcomeName").textContent = "Hello, " + currentMember.name + "!";
+    $("memberCount").textContent = "Registered members: " + members.length;
+    const tbody = $("membersTable");
+    tbody.replaceChildren();
+    members.forEach((member, index) => {
+      const tr = document.createElement("tr");
+      [String(index + 1), member.name, member.phone].forEach(value => {
+        const td = document.createElement("td");
+        td.textContent = value;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  $("signupForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const name = $("realName").value.trim().replace(/\s+/g, " ");
+    const phone = $("phone").value.trim();
+    const password = $("signupPassword").value;
+
+    if (!validName(name)) {
+      $("signupMessage").textContent = "Enter a valid real name using letters and spaces only.";
+      $("realName").focus(); return;
+    }
+    if (!validPhone(phone)) {
+      $("signupMessage").textContent = "Enter exactly 10 digits, starting with 07 or 01.";
+      $("phone").focus(); return;
+    }
+    if (password.length < 4 || password.length > 10) {
+      $("signupMessage").textContent = "Password must be between 4 and 10 characters.";
+      $("signupPassword").focus(); return;
+    }
+
+    const members = getMembers();
+    if (members.some(member => member.phone === phone)) {
+      $("signupMessage").textContent = "That phone number is already registered. Please log in.";
+      return;
+    }
+    const member = { name, phone, password, createdAt: new Date().toISOString() };
+    members.push(member);
+    try {
+      saveMembers(members);
+    } catch {
+      $("signupMessage").textContent = "Could not save registration in this browser.";
+      return;
+    }
+    $("signupForm").reset();
+    // Signup goes directly to Page 2, as requested.
+    renderMembers(member);
+    showPage("welcomePage");
+  });
+
+  $("loginForm").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const password = $("loginPassword").value;
+    if (!password) {
+      $("loginMessage").textContent = "Please enter your password.";
+      return;
+    }
+    const members = getMembers();
+    const member = members.find(item => item.password === password);
+    if (!member) {
+      $("loginMessage").textContent = "Password not found. Please check it or sign up first.";
+      return;
+    }
+    $("loginForm").reset();
+    renderMembers(member);
+    showPage("welcomePage");
+  });
+
+  $("goLogin").addEventListener("click", () => showPage("loginPage"));
+  $("backSignup").addEventListener("click", () => showPage("signupPage"));
+  $("addMember").addEventListener("click", () => showPage("signupPage"));
+  $("logout").addEventListener("click", () => showPage("loginPage"));
+
+  // Allow digits only in the phone input and keep the maximum at 10 characters.
+  $("phone").addEventListener("input", () => {
+    $("phone").value = $("phone").value.replace(/\D/g, "").slice(0, 10);
+  });
+})();
+</script>
+</body>
+</html>
